@@ -34,7 +34,7 @@ Bluesky.corpus = Corpus(VectorSource(skeets_texts))
 Bluesky.corpus = tm_map(
   Bluesky.corpus, 
   function(x) iconv(x, to = "UTF-8", sub = "byte")
-  )
+)
 
 # This code is given by AI to clean the URLs and bare domains like youtube.com/...
 # Create a function to remove URLs and website domains from the posts.
@@ -51,7 +51,7 @@ corpus = tm_map(Bluesky.corpus, remove_urls)
 # Convert the text to ASCII and replace unsupported characters with spaces.
 corpus = tm_map(corpus, content_transformer(
   function(x) iconv(x, to = "ASCII", sub = " "))
-  )
+)
 # Remove numbers from the posts
 corpus = tm_map(corpus, removeNumbers)
 # Remove punctuation from the posts
@@ -278,17 +278,16 @@ ct$p.value
 #====================================================================
 # Search AI-related posts from 2025 only
 search_skeets_AI_2025 = search_skeet(
-    "Impact of generative AI",
-    sort = "latest",
-    since = "2025-01-01",
-    until = "2025-12-31",
-    limit = 200
-  )
-grep("creat|date|time|indexed", names(search_skeets_AI_2025), value = TRUE)
-library(tm)
+  "Impact of generative AI",
+  sort = "latest",
+  since = "2025-01-01",
+  until = "2025-12-31",
+  limit = 200
+)
+
 # Extract the year from each post's creation date
 search_skeets_AI_2025$year =
-  substr(search_skeets_AI_2025$indexed_at, 1, 4)
+  substr(search_skeets_AI_2025$created_at, 1, 4)
 
 # Check the number of posts collected for each year
 table(search_skeets_AI_2025$year, useNA = "ifany")
@@ -304,7 +303,7 @@ search_skeets_AI_2026 = search_skeet(
 
 # Extract the year from each post's creation date
 search_skeets_AI_2026$year =
-  substr(search_skeets_AI_2026$indexed_at, 1, 4)
+  substr(search_skeets_AI_2026$created_at, 1, 4)
 
 # Check the number of posts collected for each year
 table(
@@ -316,11 +315,15 @@ table(
 nrow(search_skeets_AI_2026)
 
 # remove posts with missing years
-search_skeets_AI_2025$year <-
-  substr(search_skeets_AI_2025$indexed_at, 1, 4)
+search_skeets_AI_2025 =
+  search_skeets_AI_2025[
+    !is.na(search_skeets_AI_2025$year),
+  ]
 
-table(search_skeets_AI_2025$year, useNA = "ifany")
-
+search_skeets_AI_2026 =
+  search_skeets_AI_2026[
+    !is.na(search_skeets_AI_2026$year),
+  ]
 
 # Create a function to classify posts into predefined topics
 # based on keywords in their text (Same topics from RQ1)
@@ -388,19 +391,19 @@ search_skeets_AI_2026 =
 
 # Combine the 2025 and 2026 data sets into one data set
 RQ2_data = rbind(
-    search_skeets_AI_2025,
-    search_skeets_AI_2026
-  )
+  search_skeets_AI_2025,
+  search_skeets_AI_2026
+)
 # Remove posts that could not be assigned to a topic
 RQ2_data = RQ2_data[
-    !is.na(RQ2_data$topic),
-  ]
+  !is.na(RQ2_data$topic),
+]
 # Create a contingency table showing the number of posts
 # in each topic for each year
 tab = table(
-    RQ2_data$year,
-    RQ2_data$topic
-  )
+  RQ2_data$year,
+  RQ2_data$topic
+)
 tab
 
 
@@ -415,9 +418,9 @@ ct$expected
 # Repeat the chi-squared test using a simulated p-value
 # This helps when expected frequencies are small
 ct_sim = chisq.test(
-    tab,
-    simulate.p.value = TRUE
-  )
+  tab,
+  simulate.p.value = TRUE
+)
 # Display the simulation-based test results
 ct_sim
 # Extract the simulation-based p-value
@@ -696,7 +699,7 @@ top_candidates <- head(
   author_info[
     order(author_info$followers_count,decreasing = TRUE), 
     c("actor_handle", "actor_name", "followers_count", "follows_count")
-    ], 
+  ], 
   5)
 top_candidates
 
